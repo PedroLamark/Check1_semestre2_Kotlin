@@ -1,8 +1,12 @@
 package br.com.fiap.listadecompras
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class ItemModel(
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val name: String,
-    val onRemove: (ItemModel) -> Unit
+    val name: String
 ) {
 }
