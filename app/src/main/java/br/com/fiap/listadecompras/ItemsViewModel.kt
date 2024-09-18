@@ -1,28 +1,41 @@
 package br.com.fiap.listadecompras
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.room.Room
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class ItemsViewModel: ViewModel() {
+class ItemsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var items = mutableListOf<ItemModel>()
-    val itemsLiveData = MutableLiveData<List<ItemModel>>()
+    private val itemDao: ItemDao
+    val itemsLiveData: LiveData<List<ItemModel>>
 
-    fun addItem(name: String) {
-        val item = ItemModel(
-            id = 0 ,
-            name = name,
-            onRemove = ::removeItem
-        )
-        if (!items.contains(item)){
-            items.add(item)
-            itemsLiveData.value = items
+    init {
+        val database = Room.databaseBuilder(
+            getApplication(),
+            ItemDatabase::class.java,
+            "items_database"
+        ).build()
+
+        itemDao = database.itemDao()
+        itemsLiveData = itemDao.getAll()
+    }
+
+    fun addItem(item: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newItem = ItemModel(name = item)
+            itemDao.insert(newItem)
         }
     }
 
-    private fun removeItem(item: ItemModel) {
-        items.remove(item)
-        itemsLiveData.value = items
+    fun removeItem(item: ItemModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            itemDao.delete(item)
+        }
     }
-
 }

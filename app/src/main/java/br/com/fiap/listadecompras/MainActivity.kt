@@ -6,11 +6,13 @@ import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import carreiras.com.github.kotlin_android_lista_de_compras.ItemsViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
-    val viewModel: ItemsViewModel by viewModels()
+    private lateinit var viewModel: ItemsViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -21,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Lista de Compras"
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val itemsAdapter = ItemsAdapter()
+        val itemsAdapter = ItemsAdapter {item -> viewModel.removeItem((item))}
         recyclerView.adapter = itemsAdapter
 
         val button = findViewById<Button>(R.id.button)
@@ -37,6 +39,9 @@ class MainActivity : AppCompatActivity() {
             viewModel.addItem(editText.text.toString())
             editText.text.clear()
         }
+
+        val viewModelFactory = ItemsViewModelFactory(application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ItemsViewModel::class.java)
 
         viewModel.itemsLiveData.observe(this) {
             items -> itemsAdapter.updateItems(items)
