@@ -7,6 +7,12 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+
+/*
+Código que faz relação direta com o RecyclerView,
+permitindo personalização das funcionalidades padrão de um RecyclerView
+*/
+
 class ItemsAdapter(private val onItemRemoved: (ItemModel) -> Unit) : RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
 
     private var items = listOf<ItemModel>()
@@ -43,4 +49,3 @@ class ItemsAdapter(private val onItemRemoved: (ItemModel) -> Unit) : RecyclerVie
         notifyDataSetChanged()
     }
 }
-
